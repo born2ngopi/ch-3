@@ -33,7 +33,9 @@ func (s *chatbotService) StepOne(ctx context.Context, chatbotStep ChatbotStep, r
 				// server error
 				return err
 			}
+			time.Sleep(500 * time.Millisecond)
 		} else {
+			time.Sleep(2 * time.Second)
 			// send list interactive button
 			payload := wati.WatiInteractiveListPayload{
 				Header: "",
@@ -81,7 +83,6 @@ Silahkan pilih Lokasi
 			}
 		}
 
-		time.Sleep(1500 * time.Millisecond)
 	}
 
 	// store to redis
