@@ -15,8 +15,8 @@ func (s *chatbotService) StepOne(ctx context.Context, chatbotStep ChatbotStep, r
 	}
 
 	var templates = []string{
-		"generasi_happy_tanggerang_v2",
-		"generasi_happy_lampung_v2",
+		"generasi_happy_tanggerang_v3",
+		"generasi_happy_lampung_v3",
 		"-",
 	}
 

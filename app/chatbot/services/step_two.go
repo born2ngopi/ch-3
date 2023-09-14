@@ -54,17 +54,17 @@ func (s *chatbotService) StepTwo(ctx context.Context, chatbotStep ChatbotStep, r
 		var entryPass, template string
 		if text == "TANGGERANG" {
 			entryPass = "GENERASI HAPPY - TANGGERANG"
-			template = "generasi_happy_tanggerang_v2"
+			template = "generasi_happy_tanggerang_v3"
 		} else if back {
 			entryPass = chatbotStep.Location
 			if entryPass == "GENERASI HAPPY - TANGGERANG" {
-				template = "generasi_happy_tanggerang_v2"
+				template = "generasi_happy_tanggerang_v3"
 			} else {
-				template = "generasi_happy_lampung_v2"
+				template = "generasi_happy_lampung_v3"
 			}
 		} else {
 			entryPass = "GENERASI HAPPY - LAMPUNG"
-			template = "generasi_happy_lampung_v2"
+			template = "generasi_happy_lampung_v3"
 		}
 
 		// send image

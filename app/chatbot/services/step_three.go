@@ -76,29 +76,20 @@ func (s *chatbotService) StepThree(ctx context.Context, chatbotStep ChatbotStep,
 		}
 
 		// send syarat dan ketentuan umum
-		if err := s.wati.SendTemplate(
-			ctx,
-			req.WaID,
-			"term_condition_1",
-			"Text",
-			[]wati.WatiParameters{},
-		); err != nil {
-			// server error
-			return err
+		for i := 0; i < 5; i++ {
+			templateName := fmt.Sprintf("term_condition_%d_v3", i+1)
+			if err := s.wati.SendTemplate(
+				ctx,
+				req.WaID,
+				templateName,
+				"Text",
+				[]wati.WatiParameters{},
+			); err != nil {
+				// server error
+				return err
+			}
+			time.Sleep(600 * time.Millisecond)
 		}
-		time.Sleep(600 * time.Millisecond)
-
-		if err := s.wati.SendTemplate(
-			ctx,
-			req.WaID,
-			"term_condition_2",
-			"Text",
-			[]wati.WatiParameters{},
-		); err != nil {
-			// server error
-			return err
-		}
-		time.Sleep(600 * time.Millisecond)
 
 		total := (number * 25000) + 1000
 		// send detail order

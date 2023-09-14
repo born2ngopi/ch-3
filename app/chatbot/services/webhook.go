@@ -25,7 +25,7 @@ func (s *chatbotService) Webhook(ctx context.Context, req request.WebhookRequest
 		if err := s.wati.SendTemplate(
 			ctx,
 			req.WaID,
-			"first_message_buy_tri",
+			"first_message_buy_tri_v2",
 			"Media",
 			[]wati.WatiParameters{},
 		); err != nil {
