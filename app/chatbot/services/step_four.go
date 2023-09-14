@@ -24,7 +24,7 @@ func (s *chatbotService) StepFour(ctx context.Context, chatbotStep ChatbotStep, 
 		if err := s.wati.SendTemplate(
 			ctx,
 			req.WaID,
-			"payment_message",
+			"payment_message_v2",
 			"Media",
 			[]wati.WatiParameters{
 				{
