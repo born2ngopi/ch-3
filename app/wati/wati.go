@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 )
 
 type (
@@ -99,7 +100,9 @@ func (w *WatiApp) send(ctx context.Context, path string, buf *bytes.Buffer) erro
 	req.Header.Set("Authorization", "Bearer "+w.AccessToken)
 	req = req.WithContext(ctx)
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 20 * time.Second,
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return err

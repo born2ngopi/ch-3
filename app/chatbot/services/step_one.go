@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"github.com/born2ngopi/chatbot-3/app/chatbot/request"
 	"github.com/born2ngopi/chatbot-3/app/wati"
 	"time"
@@ -9,7 +10,7 @@ import (
 
 func (s *chatbotService) StepOne(ctx context.Context, chatbotStep ChatbotStep, req request.WebhookRequest, back bool) error {
 
-	if req.Text != "Beli Perdana Tri" {
+	if !back && req.Text != "Beli Perdana Tri" {
 		return nil
 	}
 
@@ -28,6 +29,7 @@ func (s *chatbotService) StepOne(ctx context.Context, chatbotStep ChatbotStep, r
 				"Media",
 				[]wati.WatiParameters{},
 			); err != nil {
+				fmt.Println("error dimari", i)
 				// server error
 				return err
 			}

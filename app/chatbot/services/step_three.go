@@ -12,6 +12,7 @@ import (
 func (s *chatbotService) StepThree(ctx context.Context, chatbotStep ChatbotStep, req request.WebhookRequest, back bool) error {
 
 	text := req.ListReply.Title
+
 	// help desk
 	if text == "Help Desk" {
 		if err := s.wati.SendTemplate(
@@ -43,7 +44,6 @@ func (s *chatbotService) StepThree(ctx context.Context, chatbotStep ChatbotStep,
 		return s.StepTwo(ctx, chatbotStep, req, true)
 	} else if isValid := s.buyValidationText.MatchString(text); isValid {
 		// get number
-		fmt.Println("masuk sini numberByt")
 		numberBuy := s.findNumberBuy.FindStringSubmatch(text)
 		var number int
 		if len(numberBuy) > 1 {

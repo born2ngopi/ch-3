@@ -10,9 +10,7 @@ import (
 
 func (s *chatbotService) StepFour(ctx context.Context, chatbotStep ChatbotStep, req request.WebhookRequest, back bool) error {
 
-	fmt.Println("masuk sini")
 	text := req.Text
-	fmt.Println(text)
 
 	if text == "OK, Confirmation" {
 		fmt.Println("masuk confirmation")

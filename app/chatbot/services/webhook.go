@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/born2ngopi/chatbot-3/app/chatbot/request"
 	"github.com/born2ngopi/chatbot-3/app/wati"
 	"github.com/redis/go-redis/v9"
@@ -12,7 +11,7 @@ import (
 )
 
 func (s *chatbotService) Webhook(ctx context.Context, req request.WebhookRequest) error {
-	fmt.Println("check")
+
 	value, err := s.redis.Get(ctx, req.WaID).Result()
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {

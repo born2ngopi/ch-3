@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"github.com/born2ngopi/chatbot-3/app/chatbot/request"
 	"github.com/born2ngopi/chatbot-3/app/chatbot/services"
@@ -39,7 +40,7 @@ func (h *chatbotHandler) Webhook(c echo.Context) error {
 		})
 	}
 
-	if err := h.service.Webhook(c.Request().Context(), payload); err != nil {
+	if err := h.service.Webhook(context.Background(), payload); err != nil {
 		log.Println(err)
 		fmt.Println("response error")
 		return c.JSON(500, Response{

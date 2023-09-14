@@ -54,17 +54,17 @@ func (s *chatbotService) StepTwo(ctx context.Context, chatbotStep ChatbotStep, r
 		var entryPass, template string
 		if text == "TANGGERANG" {
 			entryPass = "GENERASI HAPPY - TANGGERANG"
-			template = "generasi_happy_tanggerang"
+			template = "generasi_happy_tanggerang_v2"
 		} else if back {
 			entryPass = chatbotStep.Location
 			if entryPass == "GENERASI HAPPY - TANGGERANG" {
-				template = "generasi_happy_tanggerang"
+				template = "generasi_happy_tanggerang_v2"
 			} else {
-				template = "generasi_happy_lampung"
+				template = "generasi_happy_lampung_v2"
 			}
 		} else {
 			entryPass = "GENERASI HAPPY - LAMPUNG"
-			template = "generasi_happy_lampung"
+			template = "generasi_happy_lampung_v2"
 		}
 
 		// send image
@@ -83,7 +83,7 @@ func (s *chatbotService) StepTwo(ctx context.Context, chatbotStep ChatbotStep, r
 			// server error
 			return err
 		}
-		time.Sleep(600 * time.Millisecond)
+		time.Sleep(1500 * time.Millisecond)
 		// send text interactive list
 		payload := wati.WatiInteractiveListPayload{
 			Header: "",
