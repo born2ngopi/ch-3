@@ -37,7 +37,7 @@ func (s *chatbotService) StepFive(ctx context.Context, chatbotStep ChatbotStep, 
 		if err := s.wati.SendTemplate(
 			ctx,
 			req.WaID,
-			"finish_message_v4",
+			"finish_message_v5",
 			"Text",
 			[]wati.WatiParameters{},
 		); err != nil {
