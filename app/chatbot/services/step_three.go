@@ -2,151 +2,75 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"github.com/born2ngopi/chatbot-3/app/chatbot/request"
 	"github.com/born2ngopi/chatbot-3/app/wati"
-	"strconv"
+	"strings"
 	"time"
 )
 
 func (s *chatbotService) StepThree(ctx context.Context, chatbotStep ChatbotStep, req request.WebhookRequest, back bool) error {
 
-	text := req.ListReply.Title
+	text := req.Text
+	text = strings.ToLower(text)
 
-	// help desk
-	if text == "Help Desk" {
+	// submission_form_invalid
+
+	//check message valid
+	var isValid = true
+	if !strings.Contains(text, "nama") {
+		isValid = false
+	}
+	// alamat pengiriman
+	if !strings.Contains(text, "alamat") && !strings.Contains(text, "alamat pengiriman") {
+		isValid = false
+	}
+	// no hp
+	if !strings.Contains(text, "no") && !strings.Contains(text, "no hp") && !strings.Contains(text, "no.hp:") && !strings.Contains(text, "no hp") {
+		isValid = false
+	}
+
+	if !isValid {
 		if err := s.wati.SendTemplate(
 			ctx,
 			req.WaID,
-			"help_desk",
+			"submission_form_invalid",
 			"",
 			[]wati.WatiParameters{},
 		); err != nil {
-			// server error
-			return err
-		}
-
-		// delete redis
-		if err := s.redis.Del(ctx, req.WaID).Err(); err != nil {
 			return err
 		}
 		return nil
-	} else if text == "Kembali Ke Menu" {
-		req.ListReply.Title = chatbotStep.Location
-
-		if err := s.deleteAndSetRedis(ctx, req.WaID, ChatbotStep{
-			CurrentStep: 2,
-			Location:    chatbotStep.Location,
-		}); err != nil {
-			return err
-		}
-
-		return s.StepTwo(ctx, chatbotStep, req, true)
-	} else if isValid := s.buyValidationText.MatchString(text); isValid {
-		// get number
-		numberBuy := s.findNumberBuy.FindStringSubmatch(text)
-		var number int
-		if len(numberBuy) > 1 {
-			i, err := strconv.Atoi(numberBuy[1])
-			if err != nil {
-				return err
-			}
-			number = i
-		}
-
-		isValid = func() bool {
-			if number == 1 || number == 2 || number == 3 || number == 4 || number == 6 || number == 10 {
-				return true
-			}
-			return false
-		}()
-
-		if !isValid {
-			// send invalid message
-			if err := s.wati.SendTemplate(
-				ctx,
-				req.WaID,
-				"invalid_message",
-				"",
-				[]wati.WatiParameters{},
-			); err != nil {
-				return err
-			}
-			return nil
-		}
-
-		// send syarat dan ketentuan umum
-		for i := 0; i < 5; i++ {
-			templateName := fmt.Sprintf("term_condition_%d_v3", i+1)
-			if err := s.wati.SendTemplate(
-				ctx,
-				req.WaID,
-				templateName,
-				"Text",
-				[]wati.WatiParameters{},
-			); err != nil {
-				// server error
-				return err
-			}
-			time.Sleep(600 * time.Millisecond)
-		}
-
-		total := (number * 25000) + 1000
-		// send detail order
-		if err := s.wati.SendTemplate(
-			ctx,
-			req.WaID,
-			"package_detail_v2",
-			"Text",
-			[]wati.WatiParameters{
-				{
-					Name:  "entry_pass_name",
-					Value: chatbotStep.Location,
-				},
-				{
-					Name:  "total_items",
-					Value: strconv.Itoa(number),
-				},
-				{
-					Name:  "platform_fee",
-					Value: s.numberToIDRCurrency(1000),
-				},
-				{
-					Name:  "ongkir_fee",
-					Value: "-",
-				},
-				{
-					Name:  "order_amount",
-					Value: s.numberToIDRCurrency(total),
-				},
-			},
-		); err != nil {
-			// server error
-			return err
-		}
-
-		payload := ChatbotStep{
-			CurrentStep: 4,
-			Location:    chatbotStep.Location,
-		}
-
-		fmt.Println("masuk sini send redis")
-		if err := s.deleteAndSetRedis(ctx, req.WaID, payload); err != nil {
-			// server error
-			return err
-		}
-	} else {
-		// send invalid message
-		if err := s.wati.SendTemplate(
-			ctx,
-			req.WaID,
-			"invalid_message",
-			"",
-			[]wati.WatiParameters{},
-		); err != nil {
-			return err
-		}
 	}
 
+	now := time.Now()
+
+	futureTime := now.AddDate(0, 0, 1)
+	wib := time.FixedZone("WIB", 7*60*60)
+	futureTime = futureTime.In(wib)
+
+	if err := s.wati.SendTemplate(
+		ctx,
+		req.WaID,
+		"payment_message_v3",
+		"Media",
+		[]wati.WatiParameters{
+			{
+				Name:  "end_date",
+				Value: futureTime.Format("2006-01-02 15:04:05"),
+			},
+		},
+	); err != nil {
+		return err
+	}
+
+	payload := ChatbotStep{
+		CurrentStep: 4,
+	}
+
+	if err := s.deleteAndSetRedis(ctx, req.WaID, payload); err != nil {
+		// server error
+		return err
+	}
 	return nil
+
 }

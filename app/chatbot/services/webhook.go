@@ -8,6 +8,7 @@ import (
 	"github.com/born2ngopi/chatbot-3/app/wati"
 	"github.com/redis/go-redis/v9"
 	"strings"
+	"time"
 )
 
 func (s *chatbotService) Webhook(ctx context.Context, req request.WebhookRequest) error {
@@ -22,14 +23,62 @@ func (s *chatbotService) Webhook(ctx context.Context, req request.WebhookRequest
 			return nil
 		}
 
+		// send image, and list price list
 		if err := s.wati.SendTemplate(
 			ctx,
 			req.WaID,
-			"first_message_buy_tri_v2",
+			"generasi_happy_lampung_v3",
 			"Media",
 			[]wati.WatiParameters{},
 		); err != nil {
-			// server error
+
+			return err
+		}
+		time.Sleep(1500 * time.Millisecond)
+
+		interactivePayload := wati.WatiInteractiveListPayload{
+			Header: "",
+			Footer: "",
+			Body: `Selamat kamu sudah terhubung dengan GENERASI HAPPY FESTIVAL LAMPUNG.
+
+Ini adalah layanan otomatis.
+
+Untuk melanjutkan, klik tombol beli dibawah ini.`,
+			ButtonText: "Pilih Entry Pass",
+			Sections: []wati.WatiInteractiveSections{
+				{
+					Title: "Pilih Entry Pass",
+					Rows: []wati.WatiInteractiveRows{
+						{
+							Title:       "Beli 10 Perdana",
+							Description: "@25.000 x 10 Entry Pass",
+						},
+						{
+							Title:       "Beli 6 Perdana",
+							Description: "@25.000 x 6 Entry Pass",
+						},
+						{
+							Title:       "Beli 4 Perdana",
+							Description: "@25.000 x 4 Entry Pass",
+						},
+						{
+							Title:       "Beli 3 Perdana",
+							Description: "@25.000 x 3 Entry Pass",
+						},
+						{
+							Title:       "Beli 2 Perdana",
+							Description: "@25.000 x 2 Entry Pass",
+						},
+						{
+							Title:       "Beli 1 Perdana",
+							Description: "@25.000 x 1 Entry Pass",
+						},
+					},
+				},
+			},
+		}
+
+		if err := s.wati.SendInteractiveList(ctx, req.WaID, interactivePayload); err != nil {
 			return err
 		}
 
@@ -65,9 +114,21 @@ func (s *chatbotService) Webhook(ctx context.Context, req request.WebhookRequest
 		return s.StepThree(ctx, chatbotStep, req, false)
 	case 4:
 		return s.StepFour(ctx, chatbotStep, req, false)
-	case 5:
-		return s.StepFive(ctx, chatbotStep, req, false)
 	}
 	//
+	return nil
+}
+
+func (s *chatbotService) InvalidMessage(ctx context.Context, req request.WebhookRequest) error {
+	// send invalid message
+	if err := s.wati.SendTemplate(
+		ctx,
+		req.WaID,
+		"invalid_message",
+		"",
+		[]wati.WatiParameters{},
+	); err != nil {
+		return err
+	}
 	return nil
 }
